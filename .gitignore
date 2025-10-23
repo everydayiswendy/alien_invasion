@@ -1,0 +1,6 @@
+_pycache_/
+*.pyc 
+.venv/
+.idea/
+.DS_Store
+Thumbs.db
