@@ -1,60 +1,65 @@
 import sys
 import pygame
+from settings import Settings
+from ship import Ship
+import os
 
-pygame.init()
+class AlienInvasion:
+    #管理游戏资源和行为的类
+    def __init__(self):
+        pygame.init()
+        self.settings = Settings()
 
-#屏幕设置
-screen_width = 800
-screen_height = 600
-screen = pygame.display.set_mode((screen_width, screen_height))
-pygame.display.set_caption("Alien Invasion")
+        #屏幕设置
+        self.screen = pygame.display.set_mode((self.settings.screen_width, self.settings.screen_height))
+        pygame.display.set_caption("Alien Invasion")
 
-#颜色定义
-bg_color = (230, 230, 230)
-bullet_color = (60, 60, 60)
+        self.ship = Ship(self)
 
-#飞船设置
-ship_image = pygame.image.load('images/ship.bmp')
-ship_rect = ship_image.get_rect()
-ship_rect.midbottom = (screen_width // 2, screen_height -10)
+    def run_game(self):
+        #开始游戏的主循环
+        while True:
+            #监视键盘和鼠标事件
+            self._check_events()
+            self.ship.update()
+            self._update_screen()
 
-#子弹列表
-bullets =[]
+    def _check_events(self):
+        for event in pygame.event.get():
+            if event.type == pygame.QUIT:
+                sys.exit()
+            elif event.type == pygame.KEYDOWN:
+                self._check_keydown_events(event)
 
-#子弹速度
+            elif event.type == pygame.KEYUP:
+                self._check_keyup_events(event)
 
-bullet_speed =5
-bullet_width = 3
-bullet_height = 15
+    def _check_keydown_events(self, event):
+        #相应按键
+        if event.key == pygame.K_RIGHT:
+            # 向右移动飞船
+            self.ship.moving_right = True
+        elif event.key == pygame.K_LEFT:
+            self.ship.moving_left = True
+        elif event.key == pygame.K_q:
+            pygame.quit()
+            os._exit(0)
+    def _check_keyup_events(self, event):
+        #相应松开
+        if event.key == pygame.K_RIGHT:
+            self.ship.moving_right = False
+        elif event.key == pygame.K_LEFT:
+            self.ship.moving_left = False
 
-#主循环
-running = True
-while running:
-    for event in pygame.event.get():
-        if event.type == pygame.QUIT:
-            sys.exit()
-        #按空格发射子弹
-        elif event.type == pygame.KEYDOWN:
-            if event.key == pygame.K_SPACE:
-                #创建子弹矩形
-                new_bullet = pygame.Rect(ship_rect.centerx - bullet_width //2,ship_rect.top-bullet_height, bullet_width, bullet_height)
-                bullets.append(new_bullet)
 
-    #更新子弹位置
-    for bullet in bullets[:]:
-        bullet.y -= bullet_speed
-        if bullet.bottom < 0:
-            bullets.remove(bullet)
+    def _update_screen(self):
+        # 每次循环时都重新绘制屏幕
+        self.screen.fill(self.settings.bg_color)
+        self.ship.blitme()
 
-    #填充背景
-    screen.fill(bg_color)
+        #让最近绘制的屏幕可见
+        pygame.display.flip()
 
-    #绘制飞船
-    screen.blit(ship_image,ship_rect)
-
-    #绘制子弹
-    for bullet in bullets:
-        pygame.draw.rect(screen, bullet_color, bullet)
-
-    #绘制屏幕
-    pygame.display.flip()
+if __name__ =='__main__':
+    ai = AlienInvasion()
+    ai.run_game()
