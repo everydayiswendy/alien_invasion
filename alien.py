@@ -12,12 +12,9 @@ class Alien(Sprite):
         self.settings = ai_game.settings
         
         #加载外星人图像并且设置其rect属性
-        try:
-            self.image = pygame.image.load('images/alien.bmp')
-        except:
-            print("外星人图片加载失败，使用替代图形")
-            self.image = pygame.Surface((60,60))
-            self.image.fill((0,255,0))
+     
+        self.image = pygame.image.load('images/alien.bmp')
+        
             
         self.rect = self.image.get_rect()
 
